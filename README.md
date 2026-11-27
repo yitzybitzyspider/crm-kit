@@ -11,7 +11,7 @@ A research CRM for a student team doing customer discovery. It gives you:
 
 1. Click **Use this template** on GitHub to make your team's own copy. Keep it private: it will hold real people's details.
 2. Clone your copy and open it in Claude Code.
-3. Type `/setup`. The [setup skill](.claude/skills/setup/SKILL.md) walks each teammate from a fresh clone to ready for their first interview, one checked step at a time.
+3. Type `/crm-setup`. The [setup skill](.claude/skills/crm-setup/SKILL.md) walks each teammate from a fresh clone to ready for their first interview, one checked step at a time.
 4. The first teammate also creates the database: [docs/SETUP_SUPABASE.md](docs/SETUP_SUPABASE.md).
 
 ## What to read
@@ -30,11 +30,11 @@ A research CRM for a student team doing customer discovery. It gives you:
 
 Type these in Claude Code inside the repo:
 
-- `/setup`: get a teammate ready, from clone to first interview.
-- `/sync`: bring an interview into the hub, from a recording tool or pasted notes, with the whole transcript.
-- `/outreach`: log who you contacted and what needs a follow-up.
-- `/focus`: set or check the team's goal in `FOCUS.md`.
-- `/ticket` and `/router`: turn a change to the hub into an issue and hand it to a worker.
+- `/crm-setup`: get a teammate ready, from clone to first interview.
+- `/crm-sync`: bring an interview into the hub, from a recording tool or pasted notes, with the whole transcript.
+- `/crm-outreach`: log who you contacted and what needs a follow-up.
+- `/crm-focus`: set or check the team's goal in `FOCUS.md`.
+- `/crm-ticket` and `/crm-router`: turn a change to the hub into an issue and hand it to a worker.
 
 Every skill pulls the latest from GitHub when it starts, so a fix one teammate pushes reaches everyone.
 

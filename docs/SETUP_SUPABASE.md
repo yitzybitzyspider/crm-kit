@@ -1,6 +1,6 @@
 # Set up your own Supabase project
 
-One teammate does this once. Everyone else just signs in. `/setup` walks you through it; this page is the reference.
+One teammate does this once. Everyone else just signs in. `/crm-setup` walks you through it; this page is the reference.
 
 ## 1. Create the project
 

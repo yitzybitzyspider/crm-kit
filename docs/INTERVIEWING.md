@@ -12,7 +12,7 @@ You are not testing your hypotheses by asking about them. Ask people about their
 
 ## Record it, with consent
 
-Ask before you record. Say who will see it: your team, nobody else. Use a recording tool that gives you the full transcript, and bring it in with `/sync`.
+Ask before you record. Say who will see it: your team, nobody else. Use a recording tool that gives you the full transcript, and bring it in with `/crm-sync`.
 
 ## Transcripts are verbatim
 
@@ -34,6 +34,6 @@ Each person has a setting for whether they can be quoted by name. Check it befor
 
 ## After the interview
 
-1. Run `/sync` the same day, while you remember.
+1. Run `/crm-sync` the same day, while you remember.
 2. Write a short overview: what surprised you, and which hypotheses it touched, by number.
-3. Log any follow-up with `/outreach`.
+3. Log any follow-up with `/crm-outreach`.

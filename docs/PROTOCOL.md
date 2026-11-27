@@ -4,7 +4,7 @@ There are two kinds of change, and they take different paths.
 
 ## 1. Content: straight to `main`
 
-Hypotheses, research notes and anything else you write as files go straight to `main`. People, touches and interviews are rows in the database, entered through the app or the skills (`/sync`, `/outreach`), never files.
+Hypotheses, research notes and anything else you write as files go straight to `main`. People, touches and interviews are rows in the database, entered through the app or the skills (`/crm-sync`, `/crm-outreach`), never files.
 
 ## 2. The system: three lanes, by risk
 
@@ -15,7 +15,7 @@ Pick the lane by asking: what breaks if this change is wrong?
 | Lane | What | How |
 |---|---|---|
 | **Fast** | Docs, wording, branding, skill text, one-line fixes, anything a revert undoes with no harm | Do it in the conversation where the idea came up. Commit (the hook runs the quick checks), push. No issue, no worker, no full test run. |
-| **Normal** | App screens, scripts, workflows, new features | `/ticket` writes one issue, `/router` hands it to one worker. Tests first, run the tests for the parts it touches, a draft pull request, one push, merge on green. One line in `docs/DEVLOG.md`. |
+| **Normal** | App screens, scripts, workflows, new features | `/crm-ticket` writes one issue, `/crm-router` hands it to one worker. Tests first, run the tests for the parts it touches, a draft pull request, one push, merge on green. One line in `docs/DEVLOG.md`. |
 | **Heavy** | Database migrations, sign-in, row security, anything touching real people's data, going live | As normal, plus: break the code once on purpose and watch the tests fail, run the full suite, have a second session check the work, and a person merges. |
 
 When unsure, take the faster lane that is still safe. If a mistake would only cost a revert, it is fast.
@@ -23,8 +23,8 @@ When unsure, take the faster lane that is still safe. If a mistake would only co
 ## The normal and heavy path
 
 1. **Scope** it: talk it through until you know what done looks like.
-2. **Ticket** it with `/ticket`: one GitHub issue per sitting of work, complete enough that a worker never has to ask anything.
-3. **Route** it with `/router`: the router hands each queued issue to a worker session and checks what comes back. The router does not do the work itself.
+2. **Ticket** it with `/crm-ticket`: one GitHub issue per sitting of work, complete enough that a worker never has to ask anything.
+3. **Route** it with `/crm-router`: the router hands each queued issue to a worker session and checks what comes back. The router does not do the work itself.
 
 ### What a worker does
 
