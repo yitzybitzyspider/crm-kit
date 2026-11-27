@@ -1,0 +1,23 @@
+{
+ "status": 200,
+ "body": [
+  {
+   "id": 5,
+   "title": "CRM Kit interview: front desk",
+   "recorded_on": "2026-11-17",
+   "reason": "no person matches an attendee",
+   "state": "waiting",
+   "attendee_emails": [
+    "fixture.guest@clinic-example.example.org"
+   ]
+  },
+  {
+   "id": 6,
+   "title": "Call with\nsomeone",
+   "recorded_on": "2026-11-19",
+   "reason": "consent not confirmed",
+   "state": "waiting",
+   "attendee_emails": []
+  }
+ ]
+}

@@ -1,0 +1,38 @@
+{
+ "status": 200,
+ "body": [
+  {
+   "person_code": "CC-01",
+   "name": "Maria Okafor",
+   "role": "Charge nurse",
+   "organization": "Northbay East",
+   "owner": "charlie",
+   "status": "contacted",
+   "last_touch_date": "2026-11-20",
+   "last_touch_channel": "email",
+   "last_touch_text": "Sent the intro note and asked for twenty minutes."
+  },
+  {
+   "person_code": "BB-02",
+   "name": "Mario Okafor",
+   "role": null,
+   "organization": null,
+   "owner": "bravo",
+   "status": "to-contact",
+   "last_touch_date": null,
+   "last_touch_channel": null,
+   "last_touch_text": null
+  },
+  {
+   "person_code": "AA-03",
+   "name": "Dana Lane",
+   "role": "Physician",
+   "organization": "Okafor Family Clinic",
+   "owner": "alpha",
+   "status": "replied",
+   "last_touch_date": "2026-11-21",
+   "last_touch_channel": "phone",
+   "last_touch_text": "She called back\nand said Tuesday works."
+  }
+ ]
+}

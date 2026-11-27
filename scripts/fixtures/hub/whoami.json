@@ -1,0 +1,10 @@
+{
+ "status": 200,
+ "body": [
+  {
+   "handle": "bravo",
+   "id_prefix": "BB",
+   "disabled": false
+  }
+ ]
+}

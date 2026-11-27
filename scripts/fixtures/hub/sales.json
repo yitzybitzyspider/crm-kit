@@ -1,0 +1,21 @@
+{
+ "status": 200,
+ "body": [
+  {
+   "id": 1,
+   "handle": "alpha"
+  },
+  {
+   "id": 2,
+   "handle": "bravo"
+  },
+  {
+   "id": 3,
+   "handle": "charlie"
+  },
+  {
+   "id": 4,
+   "handle": null
+  }
+ ]
+}

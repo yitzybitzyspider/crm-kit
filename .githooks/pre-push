@@ -1,0 +1,6 @@
+#!/bin/sh
+# Blocks a push when the system changed without the logs keeping up.
+# Looks at the commits not yet on the upstream branch. No upstream: skip.
+root=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
+base=$(git rev-parse --verify -q '@{u}' 2>/dev/null) || exit 0
+exec python3 "$root/scripts/check_logs.py" "$base" HEAD --root "$root"

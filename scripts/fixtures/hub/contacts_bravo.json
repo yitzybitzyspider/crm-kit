@@ -1,0 +1,41 @@
+{
+ "status": 200,
+ "body": [
+  {
+   "person_code": "BB-02",
+   "first_name": "Mario",
+   "last_name": "Okafor",
+   "title": null,
+   "status": "contacted",
+   "sales_id": 2,
+   "company_id": null
+  },
+  {
+   "person_code": "BB-05",
+   "first_name": "Ana",
+   "last_name": "Ruiz",
+   "title": "Triage nurse",
+   "status": "replied",
+   "sales_id": 2,
+   "company_id": 8
+  },
+  {
+   "person_code": "BB-07",
+   "first_name": "Sam",
+   "last_name": "Okafor",
+   "title": null,
+   "status": "scheduled",
+   "sales_id": 2,
+   "company_id": null
+  },
+  {
+   "person_code": "BB-09",
+   "first_name": "Lane",
+   "last_name": "Park",
+   "title": null,
+   "status": "do-not-contact",
+   "sales_id": 2,
+   "company_id": null
+  }
+ ]
+}

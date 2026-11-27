@@ -1,0 +1,21 @@
+{
+  "team_name": "Our team",
+  "members": [
+    {"handle": "alpha", "name": "Team Member A", "id_prefix": "AA"},
+    {"handle": "bravo", "name": "Team Member B", "id_prefix": "BB"},
+    {"handle": "charlie", "name": "Team Member C", "id_prefix": "CC"},
+    {"handle": "delta", "name": "Team Member D", "id_prefix": "DD"}
+  ],
+  "categories": [
+    {"value": "customer", "label": "Customer"},
+    {"value": "user", "label": "User"},
+    {"value": "buyer", "label": "Buyer"},
+    {"value": "partner", "label": "Partner"},
+    {"value": "expert", "label": "Expert"},
+    {"value": "other", "label": "Other"}
+  ],
+  "canvas_buckets": [
+    "customer-segments", "value-propositions", "channels", "customer-relationships",
+    "revenue-streams", "key-resources", "key-activities", "key-partners", "cost-structure"
+  ]
+}

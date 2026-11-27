@@ -1,0 +1,9 @@
+{
+ "status": 400,
+ "body": {
+  "code": "P0001",
+  "details": null,
+  "hint": null,
+  "message": "the transcript is cut short: 2025 of 2026 characters"
+ }
+}

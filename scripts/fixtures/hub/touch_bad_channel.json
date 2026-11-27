@@ -1,0 +1,9 @@
+{
+ "status": 400,
+ "body": {
+  "code": "P0001",
+  "details": null,
+  "hint": null,
+  "message": "the channel 'fax' is not one of email, linkedin, phone, intro, in-person, other"
+ }
+}

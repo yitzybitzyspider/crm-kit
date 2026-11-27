@@ -1,0 +1,9 @@
+{
+ "status": 400,
+ "body": {
+  "code": "P0001",
+  "details": null,
+  "hint": null,
+  "message": "this teammate has no handle yet"
+ }
+}

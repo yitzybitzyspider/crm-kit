@@ -1,0 +1,6 @@
+#!/bin/sh
+# Blocks a commit that carries another team's people or project (scrub_check)
+# or leaves research files malformed (check).
+top="$(git rev-parse --show-toplevel)"
+python3 "$top/scripts/scrub_check.py" "$top" || exit 1
+exec python3 "$top/scripts/check.py"

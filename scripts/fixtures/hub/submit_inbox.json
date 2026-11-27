@@ -1,0 +1,8 @@
+{
+ "status": 200,
+ "body": {
+  "result": "inbox",
+  "inbox_id": 5,
+  "reason": "no person matches an attendee"
+ }
+}

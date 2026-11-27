@@ -1,0 +1,16 @@
+{
+ "status": 200,
+ "body": [
+  {
+   "person_code": "CC-01",
+   "name": "Maria Okafor",
+   "role": "Charge nurse",
+   "organization": "Northbay East",
+   "owner": "charlie",
+   "status": "contacted",
+   "last_touch_date": "2026-11-20",
+   "last_touch_channel": "email",
+   "last_touch_text": "Sent the intro note and asked for twenty minutes."
+  }
+ ]
+}

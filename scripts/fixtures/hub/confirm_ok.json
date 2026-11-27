@@ -1,0 +1,8 @@
+{
+ "status": 200,
+ "body": {
+  "inbox_id": 5,
+  "interview_id": 12,
+  "person_code": "CC-01"
+ }
+}
