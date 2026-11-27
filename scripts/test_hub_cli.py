@@ -81,7 +81,7 @@ def row(i, category, interviewed, scheduled, contacted):
 
 # ------------------------------------------------------------ list --tally
 view = [row(1, "customer", 1, 0, 4), row(2, "user", 0, 1, 2)]   # the rest left out: shown as 0
-view += [row(i, c, 0, 0, 0) for i, c in enumerate(CATEGORIES[2:], 3) if c != "strategy"]
+view += [row(i, c, 0, 0, 0) for i, c in enumerate(CATEGORIES[2:], 3) if c != "partner"]
 view += [row(9, "uncategorized", 0, 0, 3), row(10, "total", 1, 1, 9)]
 code, out, err, reqs = run(["list", "--tally"], [(200, view)])
 lines = [line for line in out.splitlines() if line.strip()]
@@ -91,14 +91,14 @@ case("list --tally exits 0 and reads the view category_tally only",
 case("list --tally prints a header, every category in order, uncategorized and total",
      firsts == ["category"] + CATEGORIES + ["uncategorized", "total"], lines)
 case("list --tally prints the counts of a row", (lines[1:2] or [""])[0].split() == ["customer", "1", "0", "4"], lines[1:2])
-strategy = [line for line in lines if line.startswith("strategy")]
+partner = [line for line in lines if line.startswith("partner")]
 case("list --tally shows a category the view left out as 0, not hidden",
-     strategy and strategy[0].split() == ["strategy", "0", "0", "0"], strategy)
+     partner and partner[0].split() == ["partner", "0", "0", "0"], partner)
 case("list --tally prints the total row last", (lines[-1:] or [""])[0].split() == ["total", "1", "1", "9"], lines[-1:])
 code, out, err, reqs = run(["list", "--tally", "--json"], [(200, view)])
 doc = json.loads(out) if code == 0 else None
 case("list --tally --json gives one object per row, total included",
-     isinstance(doc, list) and len(doc) == 10 and doc[-1:] and doc[-1]["category"] == "total", out + err)
+     isinstance(doc, list) and len(doc) == 8 and doc[-1:] and doc[-1]["category"] == "total", out + err)
 code, out, err, reqs = run(["list", "--tally", "--owner", "bravo"], [])
 case("list --tally with --owner is refused in one line, nothing sent",
      code != 0 and not reqs and len([ln for ln in (out + err).splitlines() if ln.strip()]) == 1, out + err)

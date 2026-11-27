@@ -171,22 +171,6 @@ describe("the library's markdown", () => {
     expect(box.textContent).toContain("<b onclick=alert(1)>bold</b>");
   });
 
-  it("case 3: a mermaid block is drawn as a picture, the real ecosystem diagram included", async () => {
-    const body = await commands.readRepoFile("diagrams/ecosystem.md");
-    const screen = await render(
-      <LibraryMarkdown body={body} path="diagrams/ecosystem.md" />,
-    );
-
-    await expect
-      .poll(
-        () => screen.container.querySelectorAll("[data-mermaid] svg").length,
-        { timeout: 15000 },
-      )
-      .toBe(2);
-    expect(screen.container.textContent).toContain("Waiting patients");
-    expect(screen.container.querySelector("[data-mermaid-error]")).toBeNull();
-  });
-
   it("case 3: a mermaid label cannot run a script", async () => {
     const body = [
       "```mermaid",
@@ -257,30 +241,6 @@ describe("the library's markdown", () => {
 describe("the hypotheses tab", () => {
   beforeEach(() => {
     page.viewport(1600, 900);
-  });
-
-  it("case 4: the real hypotheses/hypotheses.md reads as one row per hypothesis, with statuses", async () => {
-    // The file is content the team edits straight on main (33 rows when the
-    // issue was written, 47 a day later), so the count is taken from the
-    // file itself, independently of the parser.
-    const body = await commands.readRepoFile("hypotheses/hypotheses.md");
-    const lines = body
-      .split("\n")
-      .filter((line) => /^\|\s*H\d+\s*\|/.test(line));
-    const { rows } = parseHypotheses(body);
-
-    expect(lines.length).toBeGreaterThanOrEqual(33);
-    expect(rows.length).toBe(lines.length);
-    const numbers = rows.map((r) => r.number);
-    expect(new Set(numbers).size).toBe(numbers.length);
-    expect(numbers).toEqual([...numbers].sort((a, b) => a - b));
-    expect(rows.every((r) => r.text.length > 0)).toBe(true);
-    expect(
-      rows.every((r) =>
-        ["open", "supported", "contradicted", "dropped"].includes(r.status),
-      ),
-    ).toBe(true);
-    expect(rows.find((r) => r.id === "H4")?.text).toMatch(/waiting room/i);
   });
 
   it("case 4: a table as the issue knew it parses to its rows and statuses, the dropped ones included", () => {

@@ -41,7 +41,7 @@ def run(root, deny_file):
 REF = "abcdefghijklmnopqrst" + ".supa" + "base.co"
 OUTSIDE = "someone" + "@" + "gmail.com"
 
-CLEAN = {"README.md": "Write to team@example.org or a.b@lab.example.org.\n",
+CLEAN = {"README.md": "Write to team@example.org, a.b@lab.example.org or alpha@hub.test.\n",
          "app/src/x.ts": "export const handle = 'alpha';\n"}
 
 root, deny = tree(CLEAN)
@@ -67,6 +67,10 @@ case("a planted project address fails", code == 1 and "Supabase project address"
 root, deny = tree({**CLEAN, "a.py": "OWNER = '%s'\n" % OUTSIDE})
 code, out = run(root, deny)
 case("an email outside example.org fails", code == 1 and OUTSIDE in out, out)
+
+root, deny = tree({**CLEAN, "app/src/d.tsx": 'filter: { "archived_at@not.is": null }\n'})
+code, out = run(root, deny)
+case("a PostgREST filter key such as x@not.is passes", code == 0, out)
 
 root, deny = tree({**CLEAN, "people/x.md": "placeholder\n"})
 code, out = run(root, deny)

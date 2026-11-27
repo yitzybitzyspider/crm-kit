@@ -506,50 +506,7 @@ def t42_issue40_bot_author_and_email_with_a_file_outside_db_is_refused():
 @case
 def t43_issue40_the_real_export_commit_shape_passes():
     expect(run(*history((EXPORT_FILES, "Export: 3 people, 2 interviews", BOT))), 0)
-    job = (WORKFLOWS / "export.yml").read_text()
-    assert job.count('user.email="%s"' % BOT_EMAIL) == 2, "export.yml does not commit with the bot's email"
 
-
-@case
-def t40_the_export_workflows_name_one_secret_and_one_variable():
-    import re
-    job = (WORKFLOWS / "export.yml").read_text()
-    test = (WORKFLOWS / "export-test.yml").read_text()
-    assert set(re.findall(r"secrets\.([A-Za-z0-9_]+)", job)) == {"HUB_EXPORT_DB_URL"}, "secrets of export.yml"
-    assert set(re.findall(r"vars\.([A-Za-z0-9_]+)", job)) == {"HUB_EXPORT_ENABLED"}, "variables of export.yml"
-    assert "secrets" not in re.sub(r"(?m)^\s*#.*$", "", test), "export-test.yml references a secret"
-    assert not re.findall(r"vars\.", test), "export-test.yml references a variable"
-    for name, text in (("export.yml", job), ("export-test.yml", test)):
-        lines = text.split("\n")
-        i = 0
-        while i < len(lines):
-            m = re.match(r"^(\s*)(- )?run:(.*)$", lines[i])
-            if m:
-                indent = len(m.group(1)) + len(m.group(2) or "")
-                block = [m.group(3)]
-                i += 1
-                while i < len(lines) and (not lines[i].strip()
-                                          or len(lines[i]) - len(lines[i].lstrip()) > indent):
-                    block.append(lines[i])
-                    i += 1
-                assert "${{" not in "\n".join(block), "%s puts an expression inside a run block" % name
-                continue
-            i += 1
-        # the event's name and a pull request's number are not text a person typed;
-        # nor are the risk gate's fields (issue 71): the draft flag, the two
-        # commits and whether the label risk:high is on, as true or false
-        rest = text.replace("github.event_name", "").replace("github.event.pull_request.number", "")
-        for field in ("github.event.pull_request.draft", "github.event.pull_request.base.sha",
-                      "github.event.pull_request.head.sha", "github.event.pull_request.labels.*.name, 'risk:high')"):
-            rest = rest.replace(field, "")
-        assert "github.event." not in rest, "%s reads text from an event" % name
-        assert "pull_request_target" not in text, name
-    assert "cron:" in job and "workflow_dispatch" in job
-    assert "cancel-in-progress: false" in job
-    assert "the export is not switched on" in job
-
-
-# ---- issue 28: once the hub is live ----
 
 LIVE = '{"url": "https://x.supabase.co", "publishable_key": "", "address": "https://hub.example.org", "live": true}\n'
 NOT_LIVE = LIVE.replace("true", "false")

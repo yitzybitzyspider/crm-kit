@@ -111,17 +111,17 @@ insert into public.user_invitations (user_id) values
     ('00000000-0000-4000-8000-0000000000d3'), ('00000000-0000-4000-8000-0000000000d4'),
     ('00000000-0000-4000-8000-0000000000d5');
 insert into auth.users (id, email) values
-    ('00000000-0000-4000-8000-0000000000d1', 'alpha@example.org'),
-    ('00000000-0000-4000-8000-0000000000d2', 'bravo@example.org'),
-    ('00000000-0000-4000-8000-0000000000d3', 'charlie@example.org'),
-    ('00000000-0000-4000-8000-0000000000d4', 'delta@example.org'),
-    ('00000000-0000-4000-8000-0000000000d5', 'later@example.org');
-update public.sales set administrator = (email = 'alpha@example.org') where email like '%@hub.test';
-select public.set_teammate_handle('alpha@example.org', 'alpha');
-select public.set_teammate_handle('bravo@example.org', 'bravo');
-select public.set_teammate_handle('charlie@example.org', 'charlie');
-select public.set_teammate_handle('delta@example.org', 'delta');
-update public.sales set secondary_emails = '["BB.Alt@elsewhere-org.example.org"]' where handle = 'bravo';
+    ('00000000-0000-4000-8000-0000000000d1', 'alpha@hub.test'),
+    ('00000000-0000-4000-8000-0000000000d2', 'bravo@hub.test'),
+    ('00000000-0000-4000-8000-0000000000d3', 'charlie@hub.test'),
+    ('00000000-0000-4000-8000-0000000000d4', 'delta@hub.test'),
+    ('00000000-0000-4000-8000-0000000000d5', 'later@hub.test');
+update public.sales set administrator = (email = 'alpha@hub.test') where email like '%@hub.test';
+select public.set_teammate_handle('alpha@hub.test', 'alpha');
+select public.set_teammate_handle('bravo@hub.test', 'bravo');
+select public.set_teammate_handle('charlie@hub.test', 'charlie');
+select public.set_teammate_handle('delta@hub.test', 'delta');
+update public.sales set secondary_emails = '["Bravo.Alt@elsewhere-org.example.org"]' where handle = 'bravo';
 
 -- The text of one submit_recording call. Arguments ending in _sql are SQL, the rest are values.
 create function pg_temp.submit_sql(
@@ -143,7 +143,7 @@ $$;
 create function pg_temp.people_and_interviews() returns text language sql as
     $$ select (select count(*) from public.contacts) || ' people, ' || (select count(*) from public.interviews) || ' interviews' $$;
 
-select pg_temp.login('charlie@example.org');
+select pg_temp.login('charlie@hub.test');
 select is(pg_temp.call($$ select public.add_person('Maria Okafor', null, 'Triage nurse', 'Example Clinic', 'maria@example-com.example.org') ->> 'person_code' $$),
           'CC-01', 'fixture: Maria, with an address');
 select is(pg_temp.call($$ select public.add_person('Alan Turing', 'bravo', null, null, 'alan@bletchley-example.example.org') ->> 'person_code' $$),
@@ -153,7 +153,7 @@ select is(pg_temp.call($$ select public.add_person('Grace Hopper', null, null, n
 
 -- ------------------------------------------- 13 submit_recording, saved
 create temp table first_submit as
-select pg_temp.calljson(pg_temp.submit_sql('rec-1', $$array['charlie@example.org', '  MARIA@Example-com.example.org ', 'bravo.alt@ELSEWHERE-org.example.org']$$,
+select pg_temp.calljson(pg_temp.submit_sql('rec-1', $$array['charlie@hub.test', '  MARIA@Example-com.example.org ', 'bravo.alt@ELSEWHERE-org.example.org']$$,
     overview => 'She said "I waited six hours in the lobby" twice.',
     hyp => '[{"hypothesis": "H1", "stance": "supports", "why": "the wait"}]')) as r;
 select is((select r ->> 'result' from first_submit), 'saved',
@@ -176,11 +176,11 @@ select is((select string_agg(hypothesis || ' ' || stance, ',') from public.inter
 create temp table inbox_cases (n integer, what text, stmt text, reason text, r jsonb, before text, after text);
 insert into inbox_cases (n, what, stmt, reason) values
     (1, 'no person matches', pg_temp.submit_sql('rec-10', $$array['stranger@nowhere-example.example.org']$$), 'no person matches an attendee'),
-    (2, 'two people match', pg_temp.submit_sql('rec-11', $$array['maria@example-com.example.org', 'ALAN@bletchley-example.example.org', 'alpha@example.org']$$),
+    (2, 'two people match', pg_temp.submit_sql('rec-11', $$array['maria@example-com.example.org', 'ALAN@bletchley-example.example.org', 'alpha@hub.test']$$),
      '2 people match an attendee'),
     (3, 'consent null', pg_temp.submit_sql('rec-12', $$array['alan@bletchley-example.example.org']$$, consent_sql => 'null'), 'consent not confirmed'),
     (4, 'consent false', pg_temp.submit_sql('rec-13', $$array['alan@bletchley-example.example.org']$$, consent_sql => 'false'), 'consent not confirmed'),
-    (5, 'only teammates attended', pg_temp.submit_sql('rec-14', $$array['charlie@example.org', 'BB@example.org', 'bravo.alt@elsewhere-org.example.org']$$),
+    (5, 'only teammates attended', pg_temp.submit_sql('rec-14', $$array['charlie@hub.test', 'BRAVO@hub.test', 'bravo.alt@elsewhere-org.example.org']$$),
      'no attendee outside the team'),
     (6, 'an empty attendee list', pg_temp.submit_sql('rec-15', $$array[]::text[]$$), 'no attendee outside the team'),
     (7, 'no attendee list', pg_temp.submit_sql('rec-16', 'null'), 'no attendee outside the team'),
@@ -210,7 +210,7 @@ select results_eq(
               b.consent_to_record, b.submitted_by, b.transcript = pg_temp.transcript(), b.interview_id, b.resolved_by
        from public.call_inbox b where b.granola_id = 'rec-11' $$,
     $$ select 'rec-11', 'granola', 'Weekly call', current_date - 1,
-              array['maria@example-com.example.org', 'alan@bletchley-example.example.org', 'alpha@example.org'], 'An overview.', 1500, true,
+              array['maria@example-com.example.org', 'alan@bletchley-example.example.org', 'alpha@hub.test'], 'An overview.', 1500, true,
               pg_temp.sid('charlie'), true, null::bigint, null::bigint $$,
     'case 14: the inbox row holds what was submitted, the transcript word for word, the addresses trimmed and in small letters');
 select is((select consent_to_record::text from public.call_inbox where granola_id = 'rec-12'), null,
@@ -267,10 +267,10 @@ select is(pg_temp.call($$ select public.add_person('Devi Rao', null, null, 'Big 
           'CC-03', 'fixture: Devi, whose address the attendee has');
 select is(pg_temp.call($$ select public.add_person('Omar Haddad', null, null, 'Big Clinic', 'omar@bigclinic-example.example.org') ->> 'person_code' $$),
           'CC-04', 'fixture: Omar, on the same domain');
-select is(pg_temp.call($$ select public.add_person('Lena Fischer', 'bravo', null, null, 'lena.fischer@gmail-com.example.org') ->> 'person_code' $$),
+select is(pg_temp.call($$ select public.add_person('Lena Fischer', 'bravo', null, null, 'lena.fischer@gmail.com') ->> 'person_code' $$),
           'BB-02', 'fixture: Lena, named in the title, on a public mail domain');
 create temp table s1 as
-select pg_temp.calljson(pg_temp.submit_sql('rec-30', $$array['devi@bigclinic-example.example.org', 'charlie@example.org']$$, consent_sql => 'null',
+select pg_temp.calljson(pg_temp.submit_sql('rec-30', $$array['devi@bigclinic-example.example.org', 'charlie@hub.test']$$, consent_sql => 'null',
                                        title => 'Intro: Dr. Lena FISCHER and Devi')) as r;
 select is((select r ->> 'reason' from s1), 'consent not confirmed', 'case 16: one match and no consent yet: inbox');
 select is(pg_temp.suggested((select (r ->> 'inbox_id')::bigint from s1)), 'CC-03,CC-04,BB-02',
@@ -280,7 +280,7 @@ select is(pg_temp.call(format($$ select string_agg(person_code || ' ' || matched
           'CC-03 email, CC-04 domain, BB-02 name', 'case 16: inbox_suggestions gives the same list, with the group that matched');
 
 create temp table s2 as
-select pg_temp.calljson(pg_temp.submit_sql('rec-31', $$array['someone.else@gmail-com.example.org']$$, title => 'Catch up')) as r;
+select pg_temp.calljson(pg_temp.submit_sql('rec-31', $$array['someone.else@gmail.com']$$, title => 'Catch up')) as r;
 select is((select r ->> 'reason' from s2), 'no person matches an attendee', 'case 16: a gmail.com attendee nobody has on file: inbox');
 select is(pg_temp.suggested((select (r ->> 'inbox_id')::bigint from s2)), '',
           'case 16: a gmail.com attendee suggests nobody by domain');
@@ -299,7 +299,7 @@ select is(pg_temp.suggested((select (r ->> 'inbox_id')::bigint from s3)), 'CC-03
 select is(pg_temp.call(format($$ select string_agg(person_code || ' ' || matched, ', ') from public.inbox_suggestions(%s) $$,
                               (select r ->> 'inbox_id' from s2))),
           '(null)', 'case 16: inbox_suggestions for the gmail.com recording is empty for now');
-select is(pg_temp.call($$ select public.add_person('Sam Else', null, null, null, 'Someone.Else@gmail-com.example.org') ->> 'person_code' $$),
+select is(pg_temp.call($$ select public.add_person('Sam Else', null, null, null, 'Someone.Else@gmail.com') ->> 'person_code' $$),
           'CC-06', 'fixture: a person added after that recording arrived');
 select is(pg_temp.call(format($$ select string_agg(person_code || ' ' || matched || ' ' || name || ' ' || owner || ' ' || status, ', ')
                                  from public.inbox_suggestions(%s) $$, (select r ->> 'inbox_id' from s2))),
@@ -328,7 +328,7 @@ from (values
      'via must be ui or claude')
 ) as v(what, stmt, want);
 
-select pg_temp.login('bravo@example.org');
+select pg_temp.login('bravo@hub.test');
 create temp table confirmed as
 select pg_temp.calljson(format($$ select public.confirm_recording(%s, 'bb-01', true, 'ui') $$, (select id from item))) as r;
 select is((select r ->> 'person_code' from confirmed), 'BB-01', 'case 17: confirm_recording with consent true is accepted');
@@ -349,7 +349,7 @@ select results_eq(
     'case 17: the inbox row stays, confirmed, with who resolved it, the interview and its transcript');
 select is((select status from public.contacts where person_code = 'BB-01'), 'interviewed', 'case 17: the person is interviewed');
 
-select pg_temp.login('charlie@example.org');
+select pg_temp.login('charlie@hub.test');
 select is(pg_temp.refused(format($$ select public.confirm_recording(%s, 'CC-02', true) $$, (select id from item))),
           format('already confirmed by bravo as interview %s', (select r ->> 'interview_id' from confirmed)),
           'case 17: a confirmed item is refused, naming who confirmed it');
@@ -410,7 +410,7 @@ select is((select count(*)::integer from public.call_inbox), 13,
 select pg_temp.logout();
 insert into public.call_inbox (source, title, recorded_on, attendee_emails, overview, transcript, submitted_by)
 values ('paste', 'By hand', current_date - 1, '{}', 'An overview.', 'only a few words', pg_temp.sid('bravo'));
-select pg_temp.login('charlie@example.org');
+select pg_temp.login('charlie@hub.test');
 select is(pg_temp.refused(format($$ select public.confirm_recording(%s, 'CC-04', true) $$,
                                  (select id from public.call_inbox where title = 'By hand'))),
           'the transcript is too short: 16 characters, an interview needs at least 1000',

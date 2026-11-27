@@ -278,7 +278,7 @@ select is_empty(
 -- ------------------------------------------------------- acting as anon
 select is(pg_temp.try_as('anon', 'select is_initialized::text from public.init_state'), '0',
           'acting as anon, init_state answers (no teammate yet: 0)');
-insert into auth.users (id, email) values ('00000000-0000-4000-8000-0000000000c1', 'first@example.org');
+insert into auth.users (id, email) values ('00000000-0000-4000-8000-0000000000c1', 'first@hub.test');
 select is(pg_temp.try_as('anon', 'select is_initialized::text from public.init_state'), '1',
           'acting as anon, init_state answers 1 once a first user exists, and never more');
 select is(pg_temp.try_as('anon', format('select count(*)::text from public.%I', t)), 'ERROR 42501',

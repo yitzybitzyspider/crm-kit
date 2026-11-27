@@ -96,11 +96,11 @@ $$;
 insert into public.user_invitations (user_id) values
     ('00000000-0000-4000-8000-0000000065d1'), ('00000000-0000-4000-8000-0000000065d2');
 insert into auth.users (id, email) values
-    ('00000000-0000-4000-8000-0000000065d1', 'delta@example.org'),
-    ('00000000-0000-4000-8000-0000000065d2', 'bravo@example.org');
-select public.set_teammate_handle('delta@example.org', 'delta');
-select public.set_teammate_handle('bravo@example.org', 'bravo');
-select pg_temp.login('delta@example.org');
+    ('00000000-0000-4000-8000-0000000065d1', 'delta@hub.test'),
+    ('00000000-0000-4000-8000-0000000065d2', 'bravo@hub.test');
+select public.set_teammate_handle('delta@hub.test', 'delta');
+select public.set_teammate_handle('bravo@hub.test', 'bravo');
+select pg_temp.login('delta@hub.test');
 
 -- ------------------------------------------------------- the function itself
 select ok((select p.prosecdef and p.proconfig @> array['search_path=""']
@@ -253,13 +253,13 @@ select is(pg_temp.refused(pg_temp.log('{"name": "Hana Itoh"}',
           '6f1d5b8e-6565-4e1a-9c65-000000000001')),
           'request id already used for something else: make a new one for a new log',
           'case 8: the same request id with a different name is refused');
-select pg_temp.login('bravo@example.org');
+select pg_temp.login('bravo@hub.test');
 select is(pg_temp.refused(pg_temp.log('{"name": "Hana Ito"}',
           '[{"channel": "email", "what": "Hi"}, {"channel": "phone", "what": "Called."}]',
           '6f1d5b8e-6565-4e1a-9c65-000000000001')),
           'request id already used for something else: make a new one for a new log',
           'the same request id and body from another teammate is refused too');
-select pg_temp.login('delta@example.org');
+select pg_temp.login('delta@hub.test');
 
 -- a refused call keeps no request id: fixed and sent again with the same id, it saves
 select is(pg_temp.refused(pg_temp.log('{"name": "Ivy Moss"}', '[{"channel": "sms", "what": "Hi"}]',

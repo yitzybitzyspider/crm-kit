@@ -40,8 +40,8 @@ create function pg_temp.login(mail text) returns void language sql as
 
 -- ------------------------------------------------------------- fixtures
 insert into public.user_invitations (user_id) values ('00000000-0000-4000-8000-0000000040b1');
-insert into auth.users (id, email) values ('00000000-0000-4000-8000-0000000040b1', 'refusals@example.org');
-select public.set_teammate_handle('refusals@example.org', 'alpha');
+insert into auth.users (id, email) values ('00000000-0000-4000-8000-0000000040b1', 'refusals@hub.test');
+select public.set_teammate_handle('refusals@hub.test', 'alpha');
 
 create temp table calls (name text primary key, stmt text, sentence text);
 insert into calls values
@@ -64,7 +64,7 @@ insert into calls values
 grant select on calls to public;
 
 -- ------------------------------------------------------- the sentences
-select pg_temp.login('refusals@example.org');
+select pg_temp.login('refusals@hub.test');
 select is(pg_temp.raised(stmt), sentence, 'issue 40 item 1: ' || name || ' is refused with its sentence')
 from calls order by name;
 
@@ -101,7 +101,7 @@ select pg_temp.break_check('public.hub_addresses(text[])', 'if coalesce(cardinal
 select pg_temp.break_check('public.find_person(text, text)', 'if char_length(v_q) > 300 then', 'if false then');
 select pg_temp.break_check('public.hub_teammate(text, text, public.sales)', 'if not found then', 'if false then');
 
-select pg_temp.login('refusals@example.org');
+select pg_temp.login('refusals@hub.test');
 select isnt(pg_temp.raised(stmt), sentence, 'issue 40 item 1: with its check broken, ' || name || ' is no longer refused with its sentence')
 from calls order by name;
 

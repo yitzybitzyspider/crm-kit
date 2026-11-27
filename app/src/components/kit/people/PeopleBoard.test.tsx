@@ -126,7 +126,7 @@ describe("PeopleBoard", () => {
 
     await expect
       .poll(() => cardsIn(screen.container, "to-contact").sort())
-      .toEqual(["BB-01", "AA-01", "DD-01"]);
+      .toEqual(["AA-01", "BB-01", "DD-01"]);
 
     await screen.getByRole("combobox", { name: "Owner" }).click();
     await screen.getByRole("option", { name: "bravo", exact: true }).click();
@@ -209,7 +209,7 @@ describe("PeopleBoard", () => {
         first_name: "Person",
         last_name: `Number ${index + 1}`,
         status: "to-contact",
-        person_code: `YZ-${String(index + 1).padStart(2, "0")}`,
+        person_code: `DD-${String(index + 1).padStart(2, "0")}`,
       }),
     );
     const started = performance.now();

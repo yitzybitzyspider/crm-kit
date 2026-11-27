@@ -109,16 +109,16 @@ insert into public.user_invitations (user_id) values
     ('00000000-0000-4000-8000-0000000000d3'), ('00000000-0000-4000-8000-0000000000d4'),
     ('00000000-0000-4000-8000-0000000000d5');
 insert into auth.users (id, email) values
-    ('00000000-0000-4000-8000-0000000000d1', 'alpha@example.org'),
-    ('00000000-0000-4000-8000-0000000000d2', 'bravo@example.org'),
-    ('00000000-0000-4000-8000-0000000000d3', 'charlie@example.org'),
-    ('00000000-0000-4000-8000-0000000000d4', 'delta@example.org'),
-    ('00000000-0000-4000-8000-0000000000d5', 'later@example.org');
-update public.sales set administrator = (email = 'alpha@example.org') where email like '%@hub.test';
-select public.set_teammate_handle('alpha@example.org', 'alpha');
-select public.set_teammate_handle('bravo@example.org', 'bravo');
-select public.set_teammate_handle('charlie@example.org', 'charlie');
-select public.set_teammate_handle('delta@example.org', 'delta');
+    ('00000000-0000-4000-8000-0000000000d1', 'alpha@hub.test'),
+    ('00000000-0000-4000-8000-0000000000d2', 'bravo@hub.test'),
+    ('00000000-0000-4000-8000-0000000000d3', 'charlie@hub.test'),
+    ('00000000-0000-4000-8000-0000000000d4', 'delta@hub.test'),
+    ('00000000-0000-4000-8000-0000000000d5', 'later@hub.test');
+update public.sales set administrator = (email = 'alpha@hub.test') where email like '%@hub.test';
+select public.set_teammate_handle('alpha@hub.test', 'alpha');
+select public.set_teammate_handle('bravo@hub.test', 'bravo');
+select public.set_teammate_handle('charlie@hub.test', 'charlie');
+select public.set_teammate_handle('delta@hub.test', 'delta');
 update public.sales set secondary_emails = '["BB.Alt@elsewhere-org.example.org"]' where handle = 'bravo';
 
 -- the owner may act as the export role for these tests only (rolled back)
@@ -164,11 +164,11 @@ select is((select count(*)::integer from public.audit_log a
                and a.old_row ->> 'handle' is null and a.new_row ->> 'handle' = 'charlie'),
           1, 'case 22: a change to sales by the owner with no sign-in is recorded with via dashboard, old and new handle');
 select is((select count(*)::integer from public.audit_log a
-           where a.table_name = 'sales' and a.action = 'insert' and a.new_row ->> 'email' = 'charlie@example.org'),
+           where a.table_name = 'sales' and a.action = 'insert' and a.new_row ->> 'email' = 'charlie@hub.test'),
           1, 'the sales row made at sign-up is recorded too');
 
 -- ------------------------------------------- 21 each action, who and what
-select pg_temp.login('charlie@example.org');
+select pg_temp.login('charlie@hub.test');
 create temp table n0 as select count(*) as n from public.audit_log;
 
 select is(pg_temp.call($$ select public.add_person('Maria Okafor', null, 'Triage nurse', 'Example Clinic', 'maria@example-com.example.org',
@@ -265,7 +265,7 @@ from (values ('interviews', (select r ->> 'interview_id' from sub2)),
              ('interview_transcripts', (select r ->> 'interview_id' from sub2)),
              ('contacts', pg_temp.pid('CC-02')::text)) as v(t, row_id);
 
-select pg_temp.login('bravo@example.org');
+select pg_temp.login('bravo@hub.test');
 select is(pg_temp.call($$ select public.add_person('Grace Hopper') ->> 'person_code' $$), 'BB-01', 'fixture: a third person, as bravo');
 create temp table conf as
 select pg_temp.calljson(format($$ select public.confirm_recording(%s, 'BB-01', true, 'ui') $$, (select id from inbox))) as r;
@@ -278,7 +278,7 @@ select is(pg_temp.audit('bravo', 'ui', 'confirm_recording', 'interviews', (selec
 
 create temp table inbox2 as
 select (pg_temp.calljson($$ select public.submit_recording('rec-3', 'granola', 'Team sync', current_date - 1,
-            array['bravo@example.org'], 'An overview.', pg_temp.transcript(), true, null, 1500, 'claude') $$) ->> 'inbox_id') as id;
+            array['bravo@hub.test'], 'An overview.', pg_temp.transcript(), true, null, 1500, 'claude') $$) ->> 'inbox_id') as id;
 select is(pg_temp.call(format($$ select public.dismiss_recording(%s, 'A team meeting.', 'claude') ->> 'state' $$, (select id from inbox2))),
           'dismissed', 'fixture: dismiss_recording');
 select is(pg_temp.audit('bravo', 'claude', 'dismiss_recording', 'call_inbox', (select id from inbox2)), 1,
@@ -372,7 +372,7 @@ select is((select count(*)::integer from public.audit_log a where a.table_name =
           'case 23: and there are four of them: two submits, a confirm and a dismiss');
 
 -- ------------------------------------------- 24 a refused action leaves no row
-select pg_temp.login('charlie@example.org');
+select pg_temp.login('charlie@hub.test');
 create temp table n3 as select count(*) as n from public.audit_log;
 select is(pg_temp.refused(v.stmt), v.want, 'case 24: refused and nothing written, ' || v.what)
 from (values
@@ -411,7 +411,7 @@ select throws_ok($$ truncate public.audit_log $$, 'P0001', 'the audit log is nev
 select is(pg_temp.call_as('service_role', $$ with d as (delete from public.audit_log returning 1) select count(*) from d $$),
           'ERROR: permission denied for table audit_log', 'case 25: the service role cannot delete from audit_log');
 
-select pg_temp.login('bravo@example.org');
+select pg_temp.login('bravo@hub.test');
 select is(pg_temp.call_as('authenticated', v.stmt), 'ERROR: permission denied for table audit_log',
           'case 25: a signed in teammate cannot ' || v.what)
 from (values

@@ -77,11 +77,11 @@ end $$;
 insert into public.user_invitations (user_id) values
     ('00000000-0000-4000-8000-0000000000b1'), ('00000000-0000-4000-8000-0000000000b2');
 insert into auth.users (id, email) values
-    ('00000000-0000-4000-8000-0000000000b1', 'alpha@example.org'),
-    ('00000000-0000-4000-8000-0000000000b2', 'bravo@example.org');
-update public.sales set administrator = (email = 'alpha@example.org') where email like '%@hub.test';
-select public.set_teammate_handle('alpha@example.org', 'alpha');
-select public.set_teammate_handle('bravo@example.org', 'bravo');
+    ('00000000-0000-4000-8000-0000000000b1', 'alpha@hub.test'),
+    ('00000000-0000-4000-8000-0000000000b2', 'bravo@hub.test');
+update public.sales set administrator = (email = 'alpha@hub.test') where email like '%@hub.test';
+select public.set_teammate_handle('alpha@hub.test', 'alpha');
+select public.set_teammate_handle('bravo@hub.test', 'bravo');
 
 create temp table net_before as select pg_temp.net_queue() as n;
 grant select on net_before to public;
@@ -184,11 +184,11 @@ select is(pg_temp.try_as('anon', $$ update public.contacts set title = 'x' $$),
           'ERROR 42501', 'case 18: anon cannot update people');
 select is(pg_temp.try_as('anon', $$ update public.sales set administrator = true $$),
           'ERROR 42501', 'case 18: anon cannot update teammates');
-select is(pg_temp.try_as('anon', $$ select public.set_teammate_handle('bravo@example.org', 'delta') $$),
+select is(pg_temp.try_as('anon', $$ select public.set_teammate_handle('bravo@hub.test', 'delta') $$),
           'ERROR 42501', 'case 18: anon cannot call set_teammate_handle');
 
 -- ---------------------------------------------------- 19 authenticated
-select pg_temp.login('bravo@example.org');
+select pg_temp.login('bravo@hub.test');
 
 select isnt(left(pg_temp.try_as('authenticated', format('select count(*)::text from public.%I', t)), 5),
             'ERROR', 'case 19: a teammate can read ' || t)
@@ -266,7 +266,7 @@ select is(pg_temp.try_as('authenticated', format(
           'ERROR 42501', 'case 20: a teammate cannot hand their touch to someone else');
 select results_eq(
     $$ select text from public.contact_notes where contact_id = pg_temp.pid('AA-01') order by text $$,
-    $$ values ('By bravo, edited by bravo.'), ('By alpha.') $$,
+    $$ values ('By alpha.'), ('By bravo, edited by bravo.') $$,
     'case 20: the second teammate''s touch is as it was');
 
 -- ----------------------------------- 21 a delete by a teammate removes nothing
@@ -408,7 +408,7 @@ from (values
     ('insert into the inbox', $$ insert into public.call_inbox (source) values ('paste') $$),
     ('read auth.users', $$ select count(*)::text from auth.users $$),
     ('read deals', $$ select count(*)::text from public.deals $$),
-    ('set a handle', $$ select public.set_teammate_handle('bravo@example.org', 'delta') $$)
+    ('set a handle', $$ select public.set_teammate_handle('bravo@hub.test', 'delta') $$)
 ) as v(what, stmt);
 
 -- ------------------------------ issue 35: the export role is truly read only
@@ -553,7 +553,7 @@ select is(to_regnamespace('net'), null, 'issue 35 case 4: there is no schema net
 -- function through pg_net). Since issue 40 item 14 a new attachment is
 -- refused; an old one, put here with the refusal switched off, can still be
 -- taken away.
-select pg_temp.login('alpha@example.org');
+select pg_temp.login('alpha@hub.test');
 select set_config('request.headers', '{"authorization": "Bearer made-up-for-this-test"}', true);
 select throws_ok($$ insert into public.contact_notes (contact_id, date, sales_id, channel, text, attachments)
                    values (pg_temp.pid('AA-01'), now(), pg_temp.sid('alpha'), 'email', 'With a file.',
@@ -566,7 +566,7 @@ insert into public.contact_notes (contact_id, date, sales_id, channel, text, att
     values (pg_temp.pid('AA-01'), now(), pg_temp.sid('alpha'), 'email', 'With a file.',
             array['{"title": "a.pdf", "path": "a.pdf"}'::jsonb]);
 alter table public.contact_notes enable trigger hub_refuse_new_attachments;
-select pg_temp.login('alpha@example.org');
+select pg_temp.login('alpha@hub.test');
 select throws_ok($$ update public.contact_notes
                    set attachments = array['{"title": "b.pdf", "path": "b.pdf"}'::jsonb]
                    where text = 'With a file.' $$,

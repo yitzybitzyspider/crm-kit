@@ -114,7 +114,7 @@ describe("getList", () => {
       withSupabaseFilterAdapter(mockDataProvider);
 
     await expect(
-      getListAdapter("resource", { filter: { "id@not-is.example.org": null } }),
+      getListAdapter("resource", { filter: { "id@not.is": null } }),
     ).resolves.toEqual([{ id: 1 }]);
 
     expect(getList).toHaveBeenCalledWith("resource", {
@@ -415,7 +415,7 @@ describe("getManyReference", () => {
         target: "target",
         pagination: { page: 1, perPage: 10 },
         sort: { field: "id", order: "ASC" },
-        filter: { "id@not-is.example.org": null },
+        filter: { "id@not.is": null },
       }),
     ).resolves.toEqual([{ id: 1 }]);
 

@@ -3221,7 +3221,7 @@ alter table public.contacts
     add constraint contacts_person_code_key unique (person_code),
     add constraint contacts_slug_key unique (slug),
     add constraint contacts_name_key_key unique (name_key),
-    add constraint contacts_person_code_format check (person_code ~ '^(SK|BB|PM|YZ)-[0-9]{2,}$'),
+    add constraint contacts_person_code_format check (person_code ~ '^[A-Z]{2}-[0-9]{2,}$'),
     add constraint contacts_status_known check (status in (
         'to-contact', 'contacted', 'replied', 'scheduled', 'interviewed', 'declined', 'do-not-contact')),
     add constraint contacts_referred_by_contact_id_fkey

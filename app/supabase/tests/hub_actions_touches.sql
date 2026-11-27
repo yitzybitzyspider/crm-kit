@@ -110,19 +110,19 @@ insert into public.user_invitations (user_id) values
     ('00000000-0000-4000-8000-0000000000d3'), ('00000000-0000-4000-8000-0000000000d4'),
     ('00000000-0000-4000-8000-0000000000d5');
 insert into auth.users (id, email) values
-    ('00000000-0000-4000-8000-0000000000d1', 'alpha@example.org'),
-    ('00000000-0000-4000-8000-0000000000d2', 'bravo@example.org'),
-    ('00000000-0000-4000-8000-0000000000d3', 'charlie@example.org'),
-    ('00000000-0000-4000-8000-0000000000d4', 'delta@example.org'),
-    ('00000000-0000-4000-8000-0000000000d5', 'later@example.org');
-update public.sales set administrator = (email = 'alpha@example.org') where email like '%@hub.test';
-select public.set_teammate_handle('alpha@example.org', 'alpha');
-select public.set_teammate_handle('bravo@example.org', 'bravo');
-select public.set_teammate_handle('charlie@example.org', 'charlie');
-select public.set_teammate_handle('delta@example.org', 'delta');
+    ('00000000-0000-4000-8000-0000000000d1', 'alpha@hub.test'),
+    ('00000000-0000-4000-8000-0000000000d2', 'bravo@hub.test'),
+    ('00000000-0000-4000-8000-0000000000d3', 'charlie@hub.test'),
+    ('00000000-0000-4000-8000-0000000000d4', 'delta@hub.test'),
+    ('00000000-0000-4000-8000-0000000000d5', 'later@hub.test');
+update public.sales set administrator = (email = 'alpha@hub.test') where email like '%@hub.test';
+select public.set_teammate_handle('alpha@hub.test', 'alpha');
+select public.set_teammate_handle('bravo@hub.test', 'bravo');
+select public.set_teammate_handle('charlie@hub.test', 'charlie');
+select public.set_teammate_handle('delta@hub.test', 'delta');
 update public.sales set secondary_emails = '["BB.Alt@elsewhere-org.example.org"]' where handle = 'bravo';
 
-select pg_temp.login('charlie@example.org');
+select pg_temp.login('charlie@hub.test');
 select is(pg_temp.call($$ select public.add_person('Maria Okafor', null, 'Triage nurse') ->> 'person_code' $$), 'CC-01',
           'fixture: one person, to-contact');
 select is(pg_temp.call($$ select public.add_person('Alan Turing') ->> 'person_code' $$), 'CC-02',

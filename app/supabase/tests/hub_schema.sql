@@ -34,11 +34,11 @@ insert into public.user_invitations (user_id) values
     ('00000000-0000-4000-8000-0000000000a1'), ('00000000-0000-4000-8000-0000000000a2'),
     ('00000000-0000-4000-8000-0000000000a3'), ('00000000-0000-4000-8000-0000000000a4');
 insert into auth.users (id, email) values
-    ('00000000-0000-4000-8000-0000000000a1', 'alpha@example.org'),
-    ('00000000-0000-4000-8000-0000000000a2', 'bravo@example.org'),
-    ('00000000-0000-4000-8000-0000000000a3', 'charlie@example.org'),
-    ('00000000-0000-4000-8000-0000000000a4', 'later@example.org');
-update public.sales set administrator = (email = 'alpha@example.org') where email like '%@hub.test';
+    ('00000000-0000-4000-8000-0000000000a1', 'alpha@hub.test'),
+    ('00000000-0000-4000-8000-0000000000a2', 'bravo@hub.test'),
+    ('00000000-0000-4000-8000-0000000000a3', 'charlie@hub.test'),
+    ('00000000-0000-4000-8000-0000000000a4', 'later@hub.test');
+update public.sales set administrator = (email = 'alpha@hub.test') where email like '%@hub.test';
 
 -- ------------------------------------------------- 6 tables, columns, types
 select has_table('public', t, 'case 6: table ' || t || ' exists')
@@ -123,37 +123,37 @@ select col_default_is('public', 'call_inbox', 'state', 'waiting',
 -- ------------------------------------------------- 15 handles and prefixes
 select throws_ok(
     $$ insert into public.contacts (first_name, last_name, sales_id)
-       values ('Early', 'Bird', (select id from public.sales where email = 'alpha@example.org')) $$,
+       values ('Early', 'Bird', (select id from public.sales where email = 'alpha@hub.test')) $$,
     'P0001', 'this teammate has no handle yet',
     'case 15: an owner with no handle cannot own a new person');
 
-select is(public.set_teammate_handle('alpha@example.org', 'alpha'), 'AA',
-          'case 15: set_teammate_handle gives alpha the prefix SK');
-select is(public.set_teammate_handle('BB@example.org ', 'bravo'), 'BB',
+select is(public.set_teammate_handle('alpha@hub.test', 'alpha'), 'AA',
+          'case 15: set_teammate_handle gives alpha the prefix AA');
+select is(public.set_teammate_handle('BRAVO@hub.test ', 'bravo'), 'BB',
           'case 15: the email is matched whatever its case');
-select is(public.set_teammate_handle('charlie@example.org', 'charlie'), 'CC',
-          'case 15: charlie gets PM');
+select is(public.set_teammate_handle('charlie@hub.test', 'charlie'), 'CC',
+          'case 15: charlie gets CC');
 select results_eq(
     $$ select handle, id_prefix from public.sales where email like '%@hub.test' order by email $$,
-    $$ values ('bravo', 'BB'), (null, null), ('charlie', 'CC'), ('alpha', 'AA') $$,
+    $$ values ('alpha', 'AA'), ('bravo', 'BB'), ('charlie', 'CC'), (null, null) $$,
     'case 15: handle and prefix are stored together, and are null until set');
 
-select throws_ok($$ select public.set_teammate_handle('nobody@example.org', 'delta') $$,
+select throws_ok($$ select public.set_teammate_handle('nobody@hub.test', 'delta') $$,
     'P0001', 'no teammate has that email', 'case 15: an unknown email is refused');
-select throws_ok($$ select public.set_teammate_handle('later@example.org', 'boss') $$,
-    'P0001', 'unknown handle: use a handle from team.json', 'case 15: an unknown handle is refused');
-select throws_ok($$ select public.set_teammate_handle('later@example.org', 'bravo') $$,
+select throws_ok($$ select public.set_teammate_handle('later@hub.test', 'boss') $$,
+    'P0001', 'unknown handle: it must be one of the handles in team.json', 'case 15: an unknown handle is refused');
+select throws_ok($$ select public.set_teammate_handle('later@hub.test', 'bravo') $$,
     'P0001', 'that handle is already taken', 'case 15: a taken handle is refused');
-select throws_ok($$ update public.sales set handle = 'boss' where email = 'later@example.org' $$,
+select throws_ok($$ update public.sales set handle = 'boss' where email = 'later@hub.test' $$,
     '23514', null, 'case 15: the check refuses an unknown handle written directly');
-update public.sales set id_prefix = 'DD' where email = 'bravo@example.org';
-select is((select id_prefix from public.sales where email = 'bravo@example.org'), 'BB',
+update public.sales set id_prefix = 'DD' where email = 'bravo@hub.test';
+select is((select id_prefix from public.sales where email = 'bravo@hub.test'), 'BB',
           'case 15: the prefix is set only by the database, from the handle');
 
 -- a signed in teammate who is not an administrator
-select pg_temp.login('bravo@example.org');
+select pg_temp.login('bravo@hub.test');
 set local role authenticated;
-select throws_ok($$ select public.set_teammate_handle('later@example.org', 'delta') $$,
+select throws_ok($$ select public.set_teammate_handle('later@hub.test', 'delta') $$,
     'P0001', 'only an administrator can set a handle',
     'case 15: a caller who is not an administrator is refused');
 reset role;
@@ -170,9 +170,9 @@ insert into public.contacts (first_name, last_name, sales_id)
 select results_eq(
     $$ select person_code, slug, name_key, status from public.contacts
        where last_name in ('Lovelace', 'Hopper', 'Turing') order by person_code $$,
-    $$ values ('BB-01', 'alan-turing', 'alan turing', 'to-contact'),
-              ('AA-01', 'ada-lovelace', 'ada lovelace', 'to-contact'),
-              ('AA-02', 'grace-hopper', 'grace hopper', 'to-contact') $$,
+    $$ values ('AA-01', 'ada-lovelace', 'ada lovelace', 'to-contact'),
+              ('AA-02', 'grace-hopper', 'grace hopper', 'to-contact'),
+              ('BB-01', 'alan-turing', 'alan turing', 'to-contact') $$,
     'case 10: AA-01, AA-02 and BB-01, and a supplied code, slug and key are replaced by the database''s');
 
 select throws_ok($$ update public.contacts set person_code = 'AA-09' where person_code = 'AA-01' $$,
@@ -187,17 +187,17 @@ select is((select status from public.contacts where person_code = 'AA-01'), 'to-
           'case 10: the status is unchanged after an update that sent null');
 
 -- the teammate now owns a person: the handle is fixed
-select throws_ok($$ select public.set_teammate_handle('alpha@example.org', 'delta') $$,
+select throws_ok($$ select public.set_teammate_handle('alpha@hub.test', 'delta') $$,
     'P0001', 'a handle cannot change once the teammate owns a person',
     'case 15: a handle cannot change once the teammate owns a person');
-select throws_ok($$ update public.sales set handle = 'delta' where email = 'alpha@example.org' $$,
+select throws_ok($$ update public.sales set handle = 'delta' where email = 'alpha@hub.test' $$,
     'P0001', 'a handle cannot change once the teammate owns a person',
     'case 15: the same holds for a direct update of sales');
 
 -- an administrator, signed in, can set a handle
-select pg_temp.login('alpha@example.org');
+select pg_temp.login('alpha@hub.test');
 set local role authenticated;
-select is(public.set_teammate_handle('later@example.org', 'delta'), 'DD',
+select is(public.set_teammate_handle('later@hub.test', 'delta'), 'DD',
           'case 15: a signed in administrator sets a handle');
 reset role;
 select pg_temp.logout();

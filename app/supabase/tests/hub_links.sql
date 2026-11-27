@@ -30,8 +30,8 @@ begin
 end $$;
 
 insert into public.user_invitations (user_id) values ('00000000-0000-4000-8000-0000000000d1');
-insert into auth.users (id, email) values ('00000000-0000-4000-8000-0000000000d1', 'alpha@example.org');
-select public.set_teammate_handle('alpha@example.org', 'alpha');
+insert into auth.users (id, email) values ('00000000-0000-4000-8000-0000000000d1', 'alpha@hub.test');
+select public.set_teammate_handle('alpha@hub.test', 'alpha');
 
 insert into public.companies (name, sales_id) values ('Link Clinic', pg_temp.sid('alpha'));
 insert into public.contacts (first_name, last_name, sales_id) values ('Lin', 'Ked', pg_temp.sid('alpha'));
@@ -103,19 +103,19 @@ select is((select linkedin_url from public.contacts where first_name = 'Bare'), 
           'a LinkedIn address given as the contact detail is filed with https://');
 
 -- ------------------------------------------ as a signed in teammate
-select is(pg_temp.as_teammate('alpha@example.org',
+select is(pg_temp.as_teammate('alpha@hub.test',
               $$ with i as (insert into public.companies (name, website) values ('Team Co', 'team.example')
                             returning website) select website::text from i $$),
           'https://team.example', 'a teammate saving a company with a bare website gets https://');
-select is(pg_temp.as_teammate('alpha@example.org',
+select is(pg_temp.as_teammate('alpha@hub.test',
               $$ insert into public.companies (name, website) values ('Bad Team Co', 'javascript:alert(1)') $$),
           'ERROR 23514', 'a teammate saving javascript: as a website is refused');
-select is(pg_temp.as_teammate('alpha@example.org',
-              $$ select (public.add_person('Ada Link', contact => 'linkedin.com/in/ada-link')->>'person_code') like 'SK-%' $$),
+select is(pg_temp.as_teammate('alpha@hub.test',
+              $$ select (public.add_person('Ada Link', contact => 'linkedin.com/in/ada-link')->>'person_code') like 'AA-%' $$),
           'true', 'add_person with a bare LinkedIn address works for a teammate');
 select is((select linkedin_url from public.contacts where first_name = 'Ada'), 'https://linkedin.com/in/ada-link',
           'and the address is filed with https://');
-select is(pg_temp.as_teammate('alpha@example.org',
+select is(pg_temp.as_teammate('alpha@hub.test',
               $$ select public.add_person('Eve Link', contact => 'javascript:alert(1)//linkedin.com')->>'person_code' $$),
           'ERROR 23514', 'add_person with a javascript: address that names linkedin.com is refused');
 
@@ -127,7 +127,7 @@ from unnest(array['{javascript:alert(1)}', '{https://ok.example,javascript:alert
 select throws_ok(format($$ insert into public.contacts (first_name, last_name, sales_id, links)
                            values ('Bad', 'Links', %s, array['javascript:alert(1)']) $$, pg_temp.sid('alpha')),
                  '23514', null, '64 case 14: contacts.links refuses javascript: on insert');
-select is(pg_temp.as_teammate('alpha@example.org',
+select is(pg_temp.as_teammate('alpha@hub.test',
               $$ update public.contacts set links = array['javascript:alert(1)'] where first_name = 'Lin' $$),
           'ERROR 23514', '64 case 14: a teammate writing javascript: into links is refused');
 update public.contacts set links = array['https://ok.example/a', 'HTTP://ok.example/b'] where id = (select id from person);

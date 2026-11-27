@@ -10,9 +10,9 @@ describe("getContactAvatar", () => {
   afterAll(() => {
     vi.resetAllMocks();
   });
-  it("should return gravatar URL for anthony@marmelab-com.example.org", async () => {
+  it("should return gravatar URL for anthony@marmelab.com", async () => {
     const email: EmailAndType[] = [
-      { email: "anthony@marmelab-com.example.org", type: "Work" },
+      { email: "anthony@marmelab.com", type: "Work" },
     ];
     const record: Partial<Contact> = { email_jsonb: email };
 
@@ -26,7 +26,7 @@ describe("getContactAvatar", () => {
   it("should return favicon URL if gravatar does not exist", async () => {
     vi.mocked(fetchWithTimeout).mockResolvedValue({ ok: true } as Response);
     const email: EmailAndType[] = [
-      { email: "no-gravatar@gravatar-com.example.org", type: "Work" },
+      { email: "no-gravatar@gravatar.com", type: "Work" },
     ];
     const record: Partial<Contact> = { email_jsonb: email };
 
@@ -36,7 +36,7 @@ describe("getContactAvatar", () => {
 
   it("should not return favicon URL if not domain not allowed", async () => {
     const email: EmailAndType[] = [
-      { email: "no-gravatar@gmail-com.example.org", type: "Work" },
+      { email: "no-gravatar@gmail.com", type: "Work" },
     ];
     const record: Partial<Contact> = { email_jsonb: email };
 
@@ -62,7 +62,7 @@ describe("getContactAvatar", () => {
   it("should fall back to favicon.show if email has no gravatar and its domain has no favicon.ico", async () => {
     vi.mocked(fetchWithTimeout).mockResolvedValue({ ok: false } as Response);
     const email: EmailAndType[] = [
-      { email: "anthony@fake-domain-marmelab-com.example.org", type: "Work" },
+      { email: "anthony@fake-domain-marmelab.com", type: "Work" },
     ];
     const record: Partial<Contact> = { email_jsonb: email };
 
@@ -72,8 +72,8 @@ describe("getContactAvatar", () => {
 
   it("should return gravatar URL for 2nd email if 1st email has no gravatar nor valid domain", async () => {
     const email: EmailAndType[] = [
-      { email: "no-gravatar@gmail-com.example.org", type: "Work" },
-      { email: "anthony@marmelab-com.example.org", type: "Work" },
+      { email: "no-gravatar@gmail.com", type: "Work" },
+      { email: "anthony@marmelab.com", type: "Work" },
     ];
     const record: Partial<Contact> = { email_jsonb: email };
 

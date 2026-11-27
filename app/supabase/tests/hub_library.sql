@@ -61,9 +61,9 @@ create function pg_temp.library() returns text language sql as
 insert into public.user_invitations (user_id) values
     ('00000000-0000-4000-8000-0000000095a1'), ('00000000-0000-4000-8000-0000000095a2');
 insert into auth.users (id, email) values
-    ('00000000-0000-4000-8000-0000000095a1', 'library-on@example.org'),
-    ('00000000-0000-4000-8000-0000000095a2', 'library-off@example.org');
-update public.sales set disabled = (email = 'library-off@example.org') where email like 'library-%@example.org';
+    ('00000000-0000-4000-8000-0000000095a1', 'library-on@hub.test'),
+    ('00000000-0000-4000-8000-0000000095a2', 'library-off@hub.test');
+update public.sales set disabled = (email = 'library-off@hub.test') where email like 'library-%@hub.test';
 
 -- ----------------------------------------------------------- the table
 select has_table('public', 'library_pages', 'the table library_pages exists');
@@ -164,18 +164,18 @@ select is((select count(*)::integer from public.library_pages where path = 'rese
 select ok(not has_function_privilege(r, 'public.library_sync(jsonb)', 'execute'),
           'library_sync: ' || r || ' cannot execute it')
 from unnest(array['anon', 'authenticated', 'service_role', 'hub_export']) r;
-select pg_temp.login('library-on@example.org');
+select pg_temp.login('library-on@hub.test');
 select is(pg_temp.try_as(r, format('select public.library_sync(%L::jsonb)::text', jsonb_build_array(pg_temp.page('research/x.md')))),
           'ERROR 42501', 'acting as ' || r || ', library_sync is refused')
 from unnest(array['anon', 'authenticated']) r;
 
 -- ------------------------------------------------------------ who reads
-select pg_temp.login('library-on@example.org');
+select pg_temp.login('library-on@hub.test');
 select is(pg_temp.try_as('authenticated', 'select count(*)::text from public.library_pages'), '3',
           'a switched on teammate reads every page');
 select is(pg_temp.try_as('authenticated', $$select body from public.library_pages where path = 'diagrams/ecosystem.md'$$),
           'A new diagram.', 'a switched on teammate reads a page''s body');
-select pg_temp.login('library-off@example.org');
+select pg_temp.login('library-off@hub.test');
 select is(pg_temp.try_as('authenticated', 'select count(*)::text from public.library_pages'), '0',
           'a switched off teammate reads nothing');
 -- a sign-in with no teammate behind it: no sales row has this user id
@@ -188,7 +188,7 @@ select ok(not has_table_privilege('hub_export', 'public.library_pages', 'select'
           'the export role cannot read the library (it is in the repo already)');
 
 -- nobody writes it directly
-select pg_temp.login('library-on@example.org');
+select pg_temp.login('library-on@hub.test');
 select is(pg_temp.try_as(r, s.stmt), 'ERROR 42501', 'acting as ' || r || ', ' || s.what || ' is refused')
 from unnest(array['anon', 'authenticated']) r,
      (values ('an insert', $$insert into public.library_pages (path, section, title, body, commit)

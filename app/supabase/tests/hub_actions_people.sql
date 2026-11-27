@@ -110,19 +110,19 @@ insert into public.user_invitations (user_id) values
     ('00000000-0000-4000-8000-0000000000d3'), ('00000000-0000-4000-8000-0000000000d4'),
     ('00000000-0000-4000-8000-0000000000d5');
 insert into auth.users (id, email) values
-    ('00000000-0000-4000-8000-0000000000d1', 'alpha@example.org'),
-    ('00000000-0000-4000-8000-0000000000d2', 'bravo@example.org'),
-    ('00000000-0000-4000-8000-0000000000d3', 'charlie@example.org'),
-    ('00000000-0000-4000-8000-0000000000d4', 'delta@example.org'),
-    ('00000000-0000-4000-8000-0000000000d5', 'later@example.org');
-update public.sales set administrator = (email = 'alpha@example.org') where email like '%@hub.test';
-select public.set_teammate_handle('alpha@example.org', 'alpha');
-select public.set_teammate_handle('bravo@example.org', 'bravo');
-select public.set_teammate_handle('charlie@example.org', 'charlie');
-select public.set_teammate_handle('delta@example.org', 'delta');
+    ('00000000-0000-4000-8000-0000000000d1', 'alpha@hub.test'),
+    ('00000000-0000-4000-8000-0000000000d2', 'bravo@hub.test'),
+    ('00000000-0000-4000-8000-0000000000d3', 'charlie@hub.test'),
+    ('00000000-0000-4000-8000-0000000000d4', 'delta@hub.test'),
+    ('00000000-0000-4000-8000-0000000000d5', 'later@hub.test');
+update public.sales set administrator = (email = 'alpha@hub.test') where email like '%@hub.test';
+select public.set_teammate_handle('alpha@hub.test', 'alpha');
+select public.set_teammate_handle('bravo@hub.test', 'bravo');
+select public.set_teammate_handle('charlie@hub.test', 'charlie');
+select public.set_teammate_handle('delta@hub.test', 'delta');
 update public.sales set secondary_emails = '["BB.Alt@elsewhere-org.example.org"]' where handle = 'bravo';
 
-select pg_temp.login('charlie@example.org');
+select pg_temp.login('charlie@hub.test');
 
 -- ------------------------------------------------------------ 2 add_person
 select is(pg_temp.call($$ select public.add_person('Maria Okafor', null, 'Triage nurse', 'Example Clinic',
@@ -188,7 +188,7 @@ select is((select count(*)::integer from public.contacts), 5, 'case 3: after the
 select is(pg_temp.call(format($$ select string_agg(person_code, ',') from public.find_person(%L) $$, v.q)),
           v.want, 'case 4: find_person finds the person by ' || v.what)
 from (values
-    ('code', 'pm-01', 'CC-01'),
+    ('code', 'cc-01', 'CC-01'),
     ('slug', 'maria-okafor', 'CC-01'),
     ('part of the name', 'okafor', 'CC-01'),
     ('the name with a title', 'Dr. Maria OKAFOR, MD', 'CC-01'),
@@ -222,7 +222,7 @@ select results_eq(
     $$ select 'Charge nurse', 'maria@example-com.example.org', 'a friend of BB', false, 'Example Clinic', 'CC-01', 'maria-okafor',
               'to-contact', pg_temp.sid('charlie') $$,
     'case 5: and only the role: contact, referrer, organization, code, slug, status and owner are as they were');
-select is(pg_temp.call($$ select public.update_person('pm-01', organization => 'City Hospital', contact => 'm.okafor@city-example.example.org',
+select is(pg_temp.call($$ select public.update_person('cc-01', organization => 'City Hospital', contact => 'm.okafor@city-example.example.org',
                                                       referred_by => '', quote_by_name => true,
                                                       notes => E'Met at the fair.\nPrefers mornings.') ->> 'person_code' $$),
           'CC-01', 'case 5: several fields at once, the code given in small letters');
@@ -447,13 +447,13 @@ select is(pg_temp.call_as('service_role', c.stmt), 'ERROR: permission denied for
           'case 20: ' || c.fn || ' cannot be called by the service role')
 from calls c;
 
-select pg_temp.login('later@example.org');
+select pg_temp.login('later@hub.test');
 select is(pg_temp.refused(c.stmt), 'this teammate has no handle yet',
           'case 20: ' || c.fn || ' refuses a teammate with no handle')
 from calls c;
 
 update public.sales set disabled = true where handle = 'delta';
-select pg_temp.login('delta@example.org');
+select pg_temp.login('delta@hub.test');
 select is(pg_temp.refused(c.stmt), 'this teammate is disabled',
           'case 20: ' || c.fn || ' refuses a disabled teammate')
 from calls c;
@@ -465,7 +465,7 @@ select is(pg_temp.refused(c.stmt), 'sign in first: this sign-in is not a teammat
 from calls c;
 
 -- and a signed in teammate with a handle is let in, through the authenticated role itself
-select pg_temp.login('bravo@example.org');
+select pg_temp.login('bravo@hub.test');
 select is(pg_temp.call_as('authenticated', $$ select public.add_person('Katherine Johnson') ->> 'person_code' $$),
           'BB-02', 'case 20: a signed in teammate calls add_person as the authenticated role');
 select is(pg_temp.call_as('authenticated', $$ select string_agg(person_code, ',') from public.find_person('katherine') $$),

@@ -8,7 +8,7 @@ Fails (exit 1) on:
     still runs the other rules and says the deny list was skipped.
   - any Supabase project address (<20 character ref>.supabase.co)
   - any email address not at example.org or one of its subdomains (GitHub
-    noreply addresses are allowed)
+    noreply addresses and the reserved .test domain are allowed)
   - any file under interviews/ or people/
 
 Usage: python3 scripts/scrub_check.py [root]
@@ -29,6 +29,16 @@ ALLOWED_EMAIL_DOMAINS = {"example.org", "users.noreply.github.com"}
 FORBIDDEN_DIRS = ("interviews/", "people/")
 SKIP_DIRS = {".git", "node_modules", "dist", "__pycache__"}
 SELF = "scripts/scrub_check.py"
+# A PostgREST filter key such as "archived_at@not.is" looks like an email; it is not one.
+POSTGREST_FILTER = re.compile(r"^not\.(is|in|eq|neq|gt|gte|lt|lte|like|ilike|cs|cd|ov|fts)$")
+# Upstream Atomic CRM fixtures whose addresses are the upstream company's own or
+# well known public domains, needed as they are for the test to mean anything.
+# hub_actions_inbox.sql needs gmail.com itself: it tests that a free mail
+# domain never suggests a person by domain.
+EMAIL_EXEMPT = {
+    "app/src/components/atomic-crm/providers/commons/getContactAvatar.test.ts",
+    "app/supabase/tests/hub_actions_inbox.sql",
+}
 
 
 def load_denylist(path: str | None) -> list[str]:
@@ -96,7 +106,9 @@ def scan(root: Path, terms: list[str]) -> list[str]:
                 hits.append(f"{rel}:{no}: Supabase project address")
             for m in EMAIL.finditer(line):
                 domain = m.group(1).lower()
-                if domain not in ALLOWED_EMAIL_DOMAINS and not domain.endswith(".example.org"):
+                if rel in EMAIL_EXEMPT or POSTGREST_FILTER.match(domain):
+                    continue
+                if domain not in ALLOWED_EMAIL_DOMAINS and not domain.endswith((".example.org", ".test")):
                     hits.append(f"{rel}:{no}: email outside example.org ({m.group(0)})")
     return hits
 
