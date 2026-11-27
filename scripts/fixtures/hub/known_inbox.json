@@ -1,0 +1,10 @@
+{
+ "status": 200,
+ "body": [
+  {
+   "id": 5,
+   "granola_id": "g-bbb",
+   "state": "waiting"
+  }
+ ]
+}

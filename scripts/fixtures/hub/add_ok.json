@@ -1,0 +1,10 @@
+{
+ "status": 200,
+ "body": {
+  "person_code": "BB-04",
+  "slug": "maria-okafor",
+  "name": "Maria Okafor",
+  "owner": "bravo",
+  "status": "to-contact"
+ }
+}

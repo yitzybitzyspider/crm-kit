@@ -1,0 +1,3 @@
+# The hub is private: no search engine may list any of it (issue 28).
+User-agent: *
+Disallow: /

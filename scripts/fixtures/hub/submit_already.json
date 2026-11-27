@@ -1,0 +1,9 @@
+{
+ "status": 400,
+ "body": {
+  "code": "P0001",
+  "details": null,
+  "hint": null,
+  "message": "this recording is already saved as interview 12 for CC-01"
+ }
+}

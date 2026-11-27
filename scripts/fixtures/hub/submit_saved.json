@@ -1,0 +1,8 @@
+{
+ "status": 200,
+ "body": {
+  "result": "saved",
+  "interview_id": 12,
+  "person_code": "CC-01"
+ }
+}

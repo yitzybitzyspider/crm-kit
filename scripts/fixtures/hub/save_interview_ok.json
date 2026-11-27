@@ -1,0 +1,10 @@
+{
+ "status": 200,
+ "body": {
+  "interview_id": 13,
+  "person_code": "CC-01",
+  "interviewer": "bravo",
+  "status": "interviewed",
+  "chars": 1500
+ }
+}

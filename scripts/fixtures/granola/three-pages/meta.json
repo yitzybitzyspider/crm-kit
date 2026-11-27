@@ -1,0 +1,9 @@
+{
+ "granola_id": "fixture-three-pages-0001",
+ "title": "CRM Kit interview: front desk, made up clinic",
+ "date": "2026-11-17",
+ "attendee_emails": [
+  "fixture.guest@clinic-example.example.org",
+  "teammate@team-example.example.org"
+ ]
+}

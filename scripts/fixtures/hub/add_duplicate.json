@@ -1,0 +1,9 @@
+{
+ "status": 400,
+ "body": {
+  "code": "P0001",
+  "details": null,
+  "hint": null,
+  "message": "already on file (same name): CC-01, Maria Okafor, owner charlie, status contacted, last touch 2026-11-20 by charlie via email"
+ }
+}

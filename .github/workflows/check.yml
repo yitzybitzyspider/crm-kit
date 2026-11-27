@@ -1,0 +1,46 @@
+name: check
+on:
+  push:
+    branches: [main]
+  pull_request:
+    # labeled and unlabeled too: the label needs-human-merge decides whether
+    # a migration may pass, so adding it runs the check again.
+    types: [opened, synchronize, reopened, edited, labeled, unlabeled]
+
+# The one gate that runs on every change, so it has no paths filter. A new
+# push, edit or label stops the old run of the same pull request;
+# off a pull request every run has its own group and is never cancelled.
+concurrency:
+  group: check-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - name: Tests and checker
+        run: sh scripts/test.sh
+      - name: Nothing from another team's research
+        run: python3 scripts/scrub_check.py
+      - name: System changes carry their logs
+        env:
+          # On a pull request compare against the base branch, so the whole
+          # pull request is judged, not only its latest push.
+          BEFORE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          AFTER: ${{ github.event.pull_request.head.sha || github.sha }}
+          EVENT: ${{ github.event_name }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+        run: |
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then exit 0; fi
+          if [ "$EVENT" = "pull_request" ]; then
+            printf '%s' "$PR_BODY" > "$RUNNER_TEMP/pr_body.txt"
+            printf '%s' "$PR_LABELS" > "$RUNNER_TEMP/pr_labels.json"
+            python3 scripts/check_logs.py "$BEFORE" "$AFTER" --pr-body-file "$RUNNER_TEMP/pr_body.txt" \
+              --pr-labels-file "$RUNNER_TEMP/pr_labels.json"
+          else
+            python3 scripts/check_logs.py "$BEFORE" "$AFTER"
+          fi

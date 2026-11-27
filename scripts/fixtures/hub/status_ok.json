@@ -1,0 +1,7 @@
+{
+ "status": 200,
+ "body": {
+  "person_code": "CC-01",
+  "status": "declined"
+ }
+}
