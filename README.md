@@ -14,6 +14,38 @@ A research CRM for a student team doing customer discovery. It gives you:
 3. Type `/crm-setup`. The [setup skill](.claude/skills/crm-setup/SKILL.md) walks each teammate from a fresh clone to ready for their first interview, one checked step at a time.
 4. The first teammate also creates the database: [docs/SETUP_SUPABASE.md](docs/SETUP_SUPABASE.md).
 
+## Tour
+
+Screens from a real team's hub. Every name, note, quote and hypothesis is replaced with placeholder text, and photos are blurred.
+
+**People board.** Who you have spoken to, counted by stakeholder category, and every contact as a card in its outreach column.
+
+![People board](docs/screenshots/people.png)
+
+**Person page.** One contact: category, linked interviews, outreach log and next step.
+
+![Person page](docs/screenshots/person.png)
+
+**Interviews.** Every interview with its person, interviewer and summary.
+
+![Interviews list](docs/screenshots/interviews.png)
+
+**Interview page.** The overview, the hypotheses it speaks to, and the full transcript below.
+
+![Interview page](docs/screenshots/interview.png)
+
+**Inbox.** New recordings wait here until someone matches them to a person or skips them.
+
+![Inbox](docs/screenshots/inbox.png)
+
+**Library: hypotheses.** Each hypothesis with its status and the interviews that support or contradict it.
+
+![Library hypotheses](docs/screenshots/library-hypotheses.png)
+
+**Calendar.** Scheduled interviews and due follow-ups, with overdue ones on top.
+
+![Calendar](docs/screenshots/calendar.png)
+
 ## What to read
 
 | Doc | What it is for |
