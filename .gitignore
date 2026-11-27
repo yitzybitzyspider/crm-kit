@@ -1,0 +1,22 @@
+.DS_Store
+__pycache__/
+.claude/settings.local.json
+# A teammate's hub session lives in ~/.config/crm-kit, never here.
+session.json
+.me
+
+app/node_modules/
+app/dist/
+app/.supabase-e2e/
+app/test-results/
+app/playwright-report/
+app/blob-report/
+app/coverage/
+app/**/__screenshots__/
+app/supabase/.branches/
+app/supabase/.temp/
+app/**/.env
+app/**/.env.local
+app/**/.env.*.local
+app/**/.env.production
+app/**/.env.development
